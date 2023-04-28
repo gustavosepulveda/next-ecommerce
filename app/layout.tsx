@@ -1,6 +1,6 @@
 import "./globals.css"
 import Nav from "./components/Nav"
-import {getServerSession} from "next-auth/next"
+import { getServerSession } from "next-auth/next"
 import { authOptions } from "@/pages/api/auth/[...nextauth]"
 
 export const metadata = {
@@ -13,13 +13,13 @@ export default async function RootLayout({
 }: {
 	children: React.ReactNode
 }) {
-  //Fetch the user 
-  const session = await getServerSession(authOptions)
-  console.log(session)
+	//Fetch the user
+	const session = await getServerSession(authOptions)
+	console.log(session)
 	return (
 		<html lang="en">
-			<body>
-				<Nav />
+			<body className="mx-64">
+				<Nav user={session?.user} expires={session?.expires as string} />
 				{children}
 			</body>
 		</html>
