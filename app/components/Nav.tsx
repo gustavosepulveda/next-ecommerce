@@ -6,13 +6,12 @@ import Image from "next/image"
 
 export default function Nav({ user }: Session) {
 	return (
-		<nav>
+		<nav className="flex justify-between items-center py-8">
 			<h1>Styled</h1>
-			<ul>
-				<li>Products</li>
+			<ul className="flex items-center gap-12">
 				{/* if the user is not signed in */}
 				{!user && (
-					<li>
+					<li className="bg-teal-600 text-white py-2 px-4 rounded-md">
 						<button onClick={() => signIn()}>Sign in</button>
 					</li>
 				)}
@@ -23,6 +22,7 @@ export default function Nav({ user }: Session) {
 							alt={user.name as string}
 							width={48}
 							height={48}
+							className="rounded-full"
 						/>
 					</li>
 				)}
