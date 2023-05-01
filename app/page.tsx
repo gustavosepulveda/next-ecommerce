@@ -1,4 +1,5 @@
 import Stripe from "stripe"
+import Product from "./components/Products"
 
 //fetch data
 const getProducts = async () => {
@@ -22,6 +23,7 @@ const getProducts = async () => {
 			}
 		})
 	)
+	return productWithPrices
 }
 
 export default async function Home() {
@@ -29,7 +31,10 @@ export default async function Home() {
 	console.log(products)
 	return (
 		<main>
-			<h1>Hello next.js </h1>
+			{/* loop products and every one runs Component Product */}
+			{products.map((product) => (
+				<Product {...product} />
+			))}
 		</main>
 	)
 }
