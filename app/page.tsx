@@ -30,10 +30,10 @@ export default async function Home() {
 	const products = await getProducts()
 	console.log(products)
 	return (
-		<main>
+		<main className="grid grid-cols-fluid gap-12">
 			{/* loop products and every one runs Component Product */}
 			{products.map((product) => (
-				<Product {...product} />
+				<Product {...product} key={product.id} />
 			))}
 		</main>
 	)
