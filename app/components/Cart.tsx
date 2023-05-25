@@ -3,12 +3,17 @@
 import Image from "next/image"
 import { useCartStore } from "@/store"
 import formatPrice from "@/util/PriceFormat"
-import { IoAddCircle, IoRemove, IoRemoveCircle } from "react-icons/io5"
+import { IoAddCircle, IoRemoveCircle } from "react-icons/io5"
 import basket from "@/public/basket.png"
+
 
 export default function Cart() {
 	const cartStore = useCartStore()
-	console.log(cartStore.isOpen)
+
+	const totalPrice = cartStore.cart.reduce((acc, item) => {
+		return acc + item.unit_amount! * item.quantity!
+	}, 0)
+
 	return (
 		<div
 			onClick={() => cartStore.toggleCart()}
@@ -67,6 +72,8 @@ export default function Cart() {
 						</div>
 					</div>
 				))}
+				{/* Check out and total */}
+				<p>Total: {formatPrice(totalPrice)}</p>
 				{cartStore.cart.length > 0 && (
 					<button className="py-2 mt-4 bg-teal-700 w-full rounded-md text-white">
 						Checkout
