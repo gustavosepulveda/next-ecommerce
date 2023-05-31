@@ -6,7 +6,7 @@ import Hydrate from "./components/Hydrate"
 import { Roboto, Lobster_Two } from "next/font/google"
 
 // Define main font
-const roboto = Roboto({weight: ['400', '500', '700'], subsets: ['latin']})
+const roboto = Roboto({ weight: ["400", "500", "700"], subsets: ["latin"] })
 
 export const metadata = {
 	title: "Create Next App",
@@ -23,7 +23,7 @@ export default async function RootLayout({
 	console.log(session)
 	return (
 		<html lang="en">
-			<body className={`mx-64 ${roboto.className}`}>
+			<body className={`mx-4 lg:mx-48 ${roboto.className}`}>
 				<Hydrate>
 					<Nav user={session?.user} expires={session?.expires as string} />
 					{children}
