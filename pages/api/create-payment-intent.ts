@@ -29,7 +29,7 @@ export default async function handler(
 		return
 	}
 	//Extract the data from the body
-	const { items, payment_intent } = req.body
+	const { items, payment_intent_id } = req.body
 
 	// Create the order data
 	const orderData = {
@@ -37,7 +37,7 @@ export default async function handler(
 		amount: calculateorderAmount(items),
 		currency: "usd",
 		status: "pending",
-		payment_intentID: payment_intent.id,
+		payment_intentID: payment_intent_id,
 		products: {
 			create: items.map((item) => ({
 				name: item.name,
@@ -54,6 +54,12 @@ export default async function handler(
 		const current_intent = await stripe.paymentIntents.retrieve(
 			payment_intent_id
 		)
+		if(current_intent){
+			const updated_intent = await stripe.paymentIntents.update(
+				payment_intent_id,
+				{amount: calculateorderAmount(items)}
+			)
+		}
 	} else {
 		//Creat a new order with prisma
 		const paymentIntent = await stripe.paymentIntents.create({
