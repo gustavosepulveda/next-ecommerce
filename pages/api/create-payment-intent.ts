@@ -25,11 +25,13 @@ export default async function handler(
 	// get the user
 	const userSession = await getServerSession(req, res, authOptions)
 	if (!userSession?.user) {
-		res.status(404).json({ message: "Not logged in" })
+		res.status(403).json({ message: "Not logged in" })
 		return
 	}
 	//Extract the data from the body
 	const { items, payment_intent_id } = req.body
+
+	console.log( payment_intent_id)
 
 	// Create the order data
 	const orderData = {
@@ -41,8 +43,8 @@ export default async function handler(
 		products: {
 			create: items.map((item) => ({
 				name: item.name,
-				description: item.description,
-				unit_amount: item.unit_amount,
+				description: item.description || null,
+				unit_amount: parseFloat(item.unit_amount),
 				image: item.image,
 				quantity: item.quantity,
 			})),
@@ -54,11 +56,39 @@ export default async function handler(
 		const current_intent = await stripe.paymentIntents.retrieve(
 			payment_intent_id
 		)
-		if(current_intent){
+		if (current_intent) {
 			const updated_intent = await stripe.paymentIntents.update(
 				payment_intent_id,
-				{amount: calculateorderAmount(items)}
+				{ amount: calculateorderAmount(items) }
 			)
+			// Fetch order with product ids
+			const existing_order = await prisma.order.findFirst({
+				where: { paymentIntentID: payment_intent_id },
+				include: { products: true },
+			})
+			if (!existing_order) {
+				res.status(400).json({ message: "Invalid Payment Intent" })
+			}
+
+			//update Exsiting Order
+			const updated_order = await prisma.order.update({
+				where: { id: existing_order?.id },
+				data: {
+					amount: calculateorderAmount(items),
+					products: {
+						deleteMany: {},
+						create: items.map((item) => ({
+							name: item.name,
+							description: item.description || null,
+							unit_amount: parseFloat(item.unit_amount),
+							image: item.image,
+							quantity: item.quantity,
+						})),
+					},
+				},
+			})
+			res.status(200).json({ paymentIntent: updated_intent })
+			return
 		}
 	} else {
 		//Creat a new order with prisma
@@ -71,9 +101,7 @@ export default async function handler(
 		const newOrder = await prisma.order.create({
 			data: orderData,
 		})
+		res.status(200).json({ paymentIntent })
+		return
 	}
-
-	res.status(200).json({ message: "done" })
-	return
-	//Data necessary for the order
 }
