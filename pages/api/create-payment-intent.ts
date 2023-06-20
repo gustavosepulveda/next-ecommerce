@@ -31,15 +31,13 @@ export default async function handler(
 	//Extract the data from the body
 	const { items, payment_intent_id } = req.body
 
-	console.log( payment_intent_id)
-
 	// Create the order data
 	const orderData = {
 		user: { connect: { id: userSession.user?.id } },
 		amount: calculateorderAmount(items),
 		currency: "usd",
 		status: "pending",
-		payment_intentID: payment_intent_id,
+		paymentIntentID: payment_intent_id,
 		products: {
 			create: items.map((item) => ({
 				name: item.name,
@@ -97,7 +95,7 @@ export default async function handler(
 			currency: "usd",
 			automatic_payment_methods: { enabled: true },
 		})
-		orderData.payment_intentID = paymentIntent.id
+		orderData.paymentIntentID = paymentIntent.id
 		const newOrder = await prisma.order.create({
 			data: orderData,
 		})

@@ -33,7 +33,8 @@ export default function Checkout() {
 				return res.json()
 			})
 			.then((data) => {
-				console.log(data)
+				setClientSecret(data.payment_intent_id.client_secret)
+				cartStore.setPaymentIntent(data.paymentIntent.id)
 			})
 	}, [])
 
